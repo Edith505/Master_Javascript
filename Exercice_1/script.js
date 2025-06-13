@@ -1,3 +1,4 @@
+"use strict";
 let prenom = prompt("Quel est votre prénom ?");
 let nom = prompt("Quel est votre nom ?");
 let age = parseInt(prompt("Quel est votre âge ?"));

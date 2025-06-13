@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#container {
+    width: 100%;
+    height: auto;
+    background-color: yellow;
+    border: 2px solid red;
+}
+
+#container ul {
+    list-style-type: none;
+    padding: 0;
+}
