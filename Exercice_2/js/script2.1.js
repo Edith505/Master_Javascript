@@ -1,71 +1,89 @@
 "use strict";
 
-// Constantes
-const MIN_TAILLE = 0.5; // mètre
-const MAX_TAILLE = 3; // mètre
+// Bornes
+const POIDS_MIN = 10;
+const POIDS_MAX = 600;
+const TAILLE_MIN = 0.5;
+const TAILLE_MAX = 3;
 
-// Fonction de calcul de l'IMC
+// Fonction de saisie générique
+function saisirValeur(message, min, max) {
+    let valeur;
+    do {
+        valeur = prompt(message);
+        if (valeur === null) return null;
+        valeur = parseFloat(valeur);
+    } while (isNaN(valeur) || valeur < min || valeur > max);
+    return valeur;
+}
+
+// Calcul IMC
 function calculImc(poids, taille) {
     return poids / (taille * taille);
 }
 
-// Fonction de classification à partir de l'IMC
-let classification = '';
+// Classification IMC sans constante
 function classificationImc(imc) {
+    let classificationImc =''
     if (imc < 18.5) {
-        classificationv = "Poids insuffisant";
-    } else if (imc < 24.9) {
-        classification = "Poids normal";
-    } else if (imc < 29.9) {
-        classification = "Excès de poids";
-    } else if (imc < 34.9) {
-        classification = "Obésité de classe I";
-    } else if (imc < 39.9) {
-        classification = "Obésité de classe II";
+        classificationImc = "Poids insuffisant";
+    } else if (imc < 25) {
+        classificationImc = "Poids normal";
+    } else if (imc < 30) {
+        classificationImc = "Excès de poids";
+    } else if (imc < 35) {
+        classificationImc = "Obésité de classe I";
+    } else if (imc < 40) {
+        classificationImc = "Obésité de classe II";
     } else {
-        classification = "Obésité de classe III";
+        classificationImc = "Obésité de classe III";
     }
-    return classification;
+    return classificationImc
 }
 
-// Saisie et vérification des données
-let monPoids = Number(prompt("Entrez votre poids en kg :"));
-let maTaille = Number(prompt("Entrez votre taille en mètre (valeur entre 0.5 et 3m) :"));
-while (isNaN(maTaille) || maTaille < MIN_TAILLE || maTaille > MAX_TAILLE) {
-    maTaille = Number(prompt("Taille invalide. Entrez votre taille en mètre (valeur entre 0.5 et 3m) :"));
-}
+// Fonction principale
+function main() {
+    let monImcElem = document.getElementById("monImc");
+    let amiImcElem = document.getElementById("amiImc");
+    let conclusionElem = document.getElementById("conclusion");
+    let erreurElem = document.getElementById("erreur");
 
-let amiPoids = Number(prompt("Entrez le poids de votre ami en kg :"));
-let amiTaille = Number(prompt("Entrez la taille de votre ami en mètre (valeur entre 0.5 et 3m) :"));
-while (isNaN(amiTaille) || amiTaille < MIN_TAILLE || amiTaille > MAX_TAILLE) {
-    amiTaille = Number(prompt("Taille invalide. Entrez la taille de votre ami en mètre (valeur entre 0.5 et 3m) :"));
-}
+    // Saisie et gestion annulation
+    let monPoids = saisirValeur(`Entrez votre poids en kg (${POIDS_MIN} à ${POIDS_MAX}) :`, POIDS_MIN, POIDS_MAX);
+    if (monPoids === null) return afficherErreur("Saisie annulée. Calcul impossible.");
 
-// Calcul des IMC
-let monImc = calculImc(monPoids, maTaille);
-let amiImc = calculImc(amiPoids, amiTaille);
+    let maTaille = saisirValeur(`Entrez votre taille en mètre (${TAILLE_MIN} à ${TAILLE_MAX}) :`, TAILLE_MIN, TAILLE_MAX);
+    if (maTaille === null) return afficherErreur("Saisie annulée. Calcul impossible.");
 
-// Classifications individuelles
-let classificationMoi = classificationImc(monImc);
-let classificationAmi = classificationImc(amiImc);
+    let amiPoids = saisirValeur(`Entrez le poids de votre ami en kg (${POIDS_MIN} à ${POIDS_MAX}) :`, POIDS_MIN, POIDS_MAX);
+    if (amiPoids === null) return afficherErreur("Saisie annulée. Calcul impossible.");
 
-let afficheMonImc = `Le résultat de mon IMC est ${monImc.toFixed(2)} , ce qui signifie : ${classificationMoi}`;
-let afficheAmiImc = `Le résultat de l'IMC de mon ami est ${amiImc.toFixed(2)} , ce qui signifie : ${classificationAmi}`;
+    let amiTaille = saisirValeur(`Entrez la taille de votre ami en mètre (${TAILLE_MIN} à ${TAILLE_MAX}) :`, TAILLE_MIN, TAILLE_MAX);
+    if (amiTaille === null) return afficherErreur("Saisie annulée. Calcul impossible.");
 
-// Fonction de comparaison
-function conclusionImc() {
+    // Calculs et affichage
+    let monImc = calculImc(monPoids, maTaille);
+    let amiImc = calculImc(amiPoids, amiTaille);
+
+    monImcElem.textContent = `Le résultat de mon IMC est ${monImc.toFixed(2)}, ce qui signifie : ${classificationImc(monImc)}`;
+    amiImcElem.textContent = `Le résultat de l'IMC de mon ami est ${amiImc.toFixed(2)}, ce qui signifie : ${classificationImc(amiImc)}`;
+
+    let conclusion = "Égalité";
     if (monImc > amiImc) {
-        return "Oui";
+        conclusion = "Oui";
     } else if (monImc < amiImc) {
-        return "Non";
-    } else {
-        return "Égalité";
+        conclusion = "Non";
     }
+    conclusionElem.textContent = `Est-ce que mon IMC est supérieur à celui de mon ami ? ${conclusion}`;
+    erreurElem.textContent = "";
 }
 
-let moiAmi = `Est-ce que mon IMC est supérieur à celui de mon ami ? ${conclusionImc()}`;
+function afficherErreur(msg) {
+    document.getElementById("monImc").textContent = "";
+    document.getElementById("amiImc").textContent = "";
+    document.getElementById("conclusion").textContent = "";
+    document.getElementById("erreur").textContent = msg;
+}
 
-// DOM
-document.getElementById("monImc").textContent = afficheMonImc;
-document.getElementById("amiImc").textContent = afficheAmiImc;
-document.getElementById("conclusion").textContent = moiAmi;
+// Lancement
+main();

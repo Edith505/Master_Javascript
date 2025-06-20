@@ -14,3 +14,7 @@ body {
     list-style-type: none;
     padding: 0;
 }
+
+#erreur{
+    display: none;
+}
